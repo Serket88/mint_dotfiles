@@ -1,0 +1,82 @@
+#! /bin/sh
+
+#  ========>  GENERAL
+PANEL_FIFO=/tmp/panel-fifo
+PANEL_HEIGHT=46
+PANEL_FONT_FAMILY="xft:Fantasque Sans Mono:size=10"
+
+#  The following is stuff that was already in here.
+#  I get the feeling that I'm supposed to leave it alone,
+#  As it adds functionality to the panel in the first place.
+if xdo id -a "$PANEL_WM_NAME" > /dev/null ; then
+	printf "%s\n" "The panel is already running." >&2
+	exit 1
+fi
+
+trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
+
+[ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
+mkfifo "$PANEL_FIFO"
+
+#  The following I feel like are the various modules.
+
+bspc config top_padding $PANEL_HEIGHT
+bspc subscribe report > "$PANEL_FIFO" &
+xtitle -sf 'T%s' > "$PANEL_FIFO" &
+
+#  This is the original clock, commented out:
+clock -sf 'S%a %H:%M' > "$PANEL_FIFO" &
+
+#  Test Battery
+
+#battery -sf 'S%s %i' > "$PANEL_FIFO" &
+
+#  ========>  CLOCK
+#while true;
+#    do
+#        echo 'C\uf017' $(date +"%l%M %p");
+#    sleep 5;
+#done > "$PANEL_FIFO" &
+
+#  ========>  DATE
+#while true;
+#do echo 'D\uf073' $(date + '%b %d')
+#    sleep 5
+#done > $PANEL_FIFO &
+
+#  ========>  BATTERY
+#while true;
+#do
+#BATT_LEVEL=$(acpi -b | grep -o '[[:digit:]]\+%' | sed 's/%//')
+#    if [ $BATT_LEVEL -ge 80 ]
+#	then
+#	    echo 'B\uf116' $BATT_LEVEL%
+#    fi
+#
+#    if [ $BATT_LEVEL -ge 30 -a $BATT_LEVEL -lt 80 ]
+#	then
+#	    echo 'B\uf117' $BATT_LEVEL%
+#    fi
+#
+#    if [ $BATT_LEVEL -lt 30 ]
+#	then
+#	    echo 'B%{T3}\uf115%{T1}' $BATT_LEVEL%
+#    fi
+#
+#    sleep 30;
+#done > "$PANEL_FIFO" &
+
+. panel_colors
+
+panel_bar < "$PANEL_FIFO" | lemonbar -a 32 -n "$PANEL_WM_NAME" -g x$PANEL_HEIGHT -f "$PANEL_FONT" -F "$COLOR_DEFAULT_FG" -B "$COLOR_DEFAULT_BG" | sh &
+
+wid=$(xdo id -a "$PANEL_WM_NAME")
+tries_left=20
+while [ -z "$wid" -a "$tries_left" -gt 0 ] ; do
+	sleep 0.05
+	wid=$(xdo id -a "$PANEL_WM_NAME")
+	tries_left=$((tries_left - 1))
+done
+[ -n "$wid" ] && xdo above -t "$(xdo id -N Bspwm -n root | sort | head -n 1)" "$wid"
+
+wait

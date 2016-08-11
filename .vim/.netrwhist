@@ -1,0 +1,11 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =9
+let g:netrw_dirhist_1='/home/caleb/.zsh.prompts'
+let g:netrw_dirhist_2='/home/caleb/.zprezto/modules/terminal'
+let g:netrw_dirhist_3='/home/caleb/.zprezto'
+let g:netrw_dirhist_4='/home/caleb/Documents/csce314'
+let g:netrw_dirhist_5='/home/caleb/Documents/csce312/nand2tetris/projects/06'
+let g:netrw_dirhist_6='/home/caleb/Documents/csce312/nand2tetris/projects/06/rubyAssembler/lib/assembler'
+let g:netrw_dirhist_7='/home/caleb/Documents/csce312/nand2tetris/projects/06/723001479/rubyAssembler'
+let g:netrw_dirhist_8='/home/caleb/Documents/csce312/nand2tetris/projects/06/723001479/rubyAssembler/lib/assembler'
+let g:netrw_dirhist_9='/home/caleb/Documents/csce314/6'
